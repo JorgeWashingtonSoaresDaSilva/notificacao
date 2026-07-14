@@ -1,5 +1,6 @@
 package com.jwss.studio.notificacao.business;
 
+import com.jwss.studio.notificacao.business.dto.ComunicacaoOutDTO;
 import com.jwss.studio.notificacao.business.dto.TarefasDTO;
 import com.jwss.studio.notificacao.infrastructure.exceptions.EmailException;
 import jakarta.mail.MessagingException;
@@ -46,6 +47,31 @@ public class EmailService {
             context.setVariable("dataEvento", dto.getDataEvento());
             context.setVariable("descricao", dto.getDescricao());
             String template = templateEngine.process("notificacao", context);
+            mimeMessageHelper.setText(template, true);
+            javaMailSender.send(mensagem);
+
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            throw new EmailException("Erro ao enviar o email ", e.getCause());
+        }
+    }
+    public void enviaComunicacaoEmail(ComunicacaoOutDTO dto) {
+
+        try {
+            MimeMessage mensagem = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mensagem, true, StandardCharsets.UTF_8.name());
+
+            mimeMessageHelper.setFrom(new InternetAddress(remetente, nomeRemetente));
+            mimeMessageHelper.setTo(InternetAddress.parse(dto.getEmailDestinatario()));
+            mimeMessageHelper.setSubject("Comunicação");
+
+            Context context = new Context();
+            context.setVariable("nomeDestinatario", dto.getNomeDestinatario());
+            context.setVariable("dataHoraEnvio", dto.getDataHoraEnvio());
+            context.setVariable("telefoneDestinatario", dto.getTelefoneDestinatario());
+            context.setVariable("mensagem", dto.getMensagem());
+            context.setVariable("modoDeEnvio", dto.getModoDeEnvio());
+            context.setVariable("statusEnvio", dto.getStatusEnvio());
+            String template = templateEngine.process("comunicacao", context);
             mimeMessageHelper.setText(template, true);
             javaMailSender.send(mensagem);
 
