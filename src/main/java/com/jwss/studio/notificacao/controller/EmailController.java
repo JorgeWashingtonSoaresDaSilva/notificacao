@@ -1,6 +1,7 @@
 package com.jwss.studio.notificacao.controller;
 
 import com.jwss.studio.notificacao.business.EmailService;
+import com.jwss.studio.notificacao.business.dto.ComunicacaoOutDTO;
 import com.jwss.studio.notificacao.business.dto.TarefasDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,11 @@ public class EmailController {
     @PostMapping
     public ResponseEntity<Void> enviarEmail(@RequestBody TarefasDTO dto) {
         emailService.enviaEmail(dto);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/comunicacao")
+    public ResponseEntity<Void> enviaComunicacaoEmail(@RequestBody ComunicacaoOutDTO dto) {
+        emailService.enviaComunicacaoEmail(dto);
         return ResponseEntity.ok().build();
     }
 }
